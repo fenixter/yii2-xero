@@ -5,8 +5,3 @@
 .project
 .settings
 .settings/com.aptana.editor.php.prefs
-*.class
-*.pyc
-*.pyo
-.DS_Store
-.project

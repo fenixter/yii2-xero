@@ -16,7 +16,7 @@
         "source": "https://github.com/slightlydiff/yii2-xero"
     },
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.4"
     },
     "autoload": {
         "files": ["xerooauth/lib/XeroOAuth.php"],

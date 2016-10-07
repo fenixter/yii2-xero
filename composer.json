@@ -16,7 +16,6 @@
         "source": "https://github.com/slightlydiff/yii2-xero"
     },
     "require": {
-        "yiisoft/yii2": "*",
         "php": ">=5.5"
     },
     "autoload": {

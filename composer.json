@@ -23,8 +23,5 @@
         "psr-4": {
             "slightlydiff\\xero\\": "src/"
         }
-    },
-    "extra": {
-        "bootstrap": "slightlydiff\\xero\\Bootstrap"
     }
 }

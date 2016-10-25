@@ -30,40 +30,25 @@ class XeroApi extends Component
 
     public function __construct($consumer_key = false, $shared_secret = false, $rsa_public_key = false, $rsa_private_key = false, $format = 'xml', $config = [])
     {
-
         parent::__construct($config);
 
         if ($consumer_key) $this->consumer_key = $consumer_key;
         if ($shared_secret) $this->shared_secret = $shared_secret;
         if ($rsa_public_key) $this->rsa_public_key = $rsa_public_key;
         if ($rsa_private_key) $this->rsa_private_key = $rsa_private_key;
+
         if (!($this->consumer_key) || !($this->shared_secret) || !($this->rsa_public_key) || !($this->rsa_private_key)) {
-            throw new UserException(\Yii::t('xero', 'A valid consumer key, shared secret and public / private key pair must be provided'));
+            throw new UserException('A valid consumer key, shared secret and public / private key pair must be provided');
         }
         if (!file_exists(Yii::getAlias($this->rsa_public_key)) || !file_exists(Yii::getAlias($this->rsa_private_key))) {
-            throw new UserException(\Yii::t('xero', 'A valid public / private key pair must be provided'));
+            throw new UserException('A valid public / private key pair must be provided');
         }
         if ($format) $this->format = (in_array($format, array('xml', 'json', 'pdf'))) ? $format : 'xml';
-
     }
 
     public function init()
     {
         parent::init();
-        $this->registerTranslations();
-    }
-
-    public function registerTranslations()
-    {
-        Yii::$app->i18n->translations['modules/users/*'] = [
-            'class' => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en-US',
-            'basePath' => '@app/modules/users/messages',
-            'fileMap' => [
-                'modules/users/validation' => 'validation.php',
-                'modules/users/form' => 'form.php'
-            ],
-        ];
     }
 
     public function __call($command, $arguments)
@@ -100,7 +85,7 @@ class XeroApi extends Component
             'users' => ['slug' => 'Users', 'supports' => 'GET']
         ];
         if (!array_key_exists($command, $api_commands)) {
-            throw new UserException(\Yii::t('xero', 'The command "{command}" is not valid for the Xero API', ['command' => $command]));
+            throw new UserException('The command "' . $command . '" is not valid for the Xero API');
         }
 
         $api_command = $api_commands[$command];
@@ -108,11 +93,11 @@ class XeroApi extends Component
 
         // First argument must always be the method
         if ((count($arguments) == 0)) {
-            throw new UserException(\Yii::t('xero', 'At least one argument must be supplied with the HTTP Method when calling "{command}"', ['command' => $command]));
+            throw new UserException('At least one argument must be supplied with the HTTP Method when calling "' . $command . '"');
         }
         $method = strip_tags(strval($arguments[0]));
         if (!in_array($method, $supported_methods)) {
-            throw new UserException(\Yii::t('xero', 'The Xero API command "{command}" does not support the method "{method}"', ['command' => $command, 'method' => $method]));
+            throw new UserException('The Xero API command "' . $command . '" does not support the method "' . $method . '"');
         }
 
         $post_body = null;
@@ -141,7 +126,7 @@ class XeroApi extends Component
                 }
                 $post_body = trim(substr($post_body, (stripos($post_body, ">") + 1)));
             } else {
-                throw new UserException(\Yii::t('xero', 'Two parameters are required for method "{method}", the method and the XML data', ['method' => $method]));
+                throw new UserException('Two parameters are required for method "' . $method . '", the method and the XML data');
             }
 
         }
@@ -163,7 +148,7 @@ class XeroApi extends Component
                 $errors .= ' - ' . $check . PHP_EOL;
 
             }
-            throw new UserException(\Yii::t('xero', 'The Xero OAuth call has returned the following errors:{errors}', ['errors' => PHP_EOL . $errors]));
+            throw new UserException('The Xero OAuth call has returned the following errors: {' . PHP_EOL . $errors . '}');
         }
 
         $session = $this->persistSession([
@@ -208,7 +193,7 @@ class XeroApi extends Component
             if ($XeroOAuth->response['code'] == 200) {
                 $data = $XeroOAuth->parseResponse($XeroOAuth->response['response'], $XeroOAuth->response['format']);
             } else {
-                throw new UserException(\Yii::t('xero', 'The Xero Api has returned the following error:{errors}', ['errors' => PHP_EOL . $XeroOAuth->response['response']]));
+                throw new UserException('The Xero Api has returned the following error:{' . PHP_EOL . $XeroOAuth->response['response'] . '}');
             }
         }
         return $data;

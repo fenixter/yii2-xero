@@ -12,7 +12,6 @@ use yii\base\UserException;
  */
 class XeroApi extends Component
 {
-
     const ENDPOINT = 'https://api.xero.com/api.xro/2.0/';
 
     public $consumer_key;
@@ -44,6 +43,8 @@ class XeroApi extends Component
             throw new UserException('A valid public / private key pair must be provided');
         }
         if ($format) $this->format = (in_array($format, array('xml', 'json', 'pdf'))) ? $format : 'xml';
+
+        $this->persist_oauth_session_file = '@runtime/cache/' . uniqid('oauth_session_');
     }
 
     public function init()
@@ -234,4 +235,11 @@ class XeroApi extends Component
         }
     }
 
+    public function deleteSessionFile()
+    {
+        $file = Yii::getAlias($this->persist_oauth_session_file);
+        if (file_exists($file) and is_writable($file)) {
+            unlink($file);
+        }
+    }
 }

@@ -16,8 +16,8 @@ class XeroApi extends Component
 
     public $consumer_key;
     public $shared_secret;
-    public $rsa_public_key = '@app/config/certs/xero_publickey.cer';
-    public $rsa_private_key = '@app/config/certs/xero_privatekey.pem';
+    public $rsa_public_key = '@app/config/certs/privatekey.cer';
+    public $rsa_private_key = '@app/config/certs/publickey.pem';
     public $useragent = "XeroOAuth-PHP";
     public $format = 'xml';
 

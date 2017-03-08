@@ -1,6 +1,7 @@
 <?php
 namespace slightlydiff\xero;
 
+use app\models\ApiLimit;
 use Yii;
 use yii\base\Component;
 use yii\base\UserException;
@@ -182,6 +183,8 @@ class XeroApi extends Component
             } else {
                 $filters = [];
             }
+
+            ApiLimit::check();
 
             $response = $XeroOAuth->request(
                 $method,        // HTML Method (GET, POST, PUT or DELETE)

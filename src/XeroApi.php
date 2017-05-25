@@ -1,4 +1,5 @@
 <?php
+
 namespace slightlydiff\xero;
 
 use app\models\ApiLimit;
@@ -105,6 +106,7 @@ class XeroApi extends Component
         $post_body = null;
         $xero_id = $modified_since = false;
         $filters = [];
+        $urlSuffix = null;
 
         if ($method == 'GET') {
 
@@ -118,19 +120,20 @@ class XeroApi extends Component
             $filters = (count($arguments) > 3) ? $arguments[3] : [];
 
         } elseif ($method == 'POST' || $method == 'PUT') {
-
             if ((count($arguments) == 2) && (is_array($arguments[1]) || is_a($arguments[1], 'SimpleXMLElement'))) {
-
                 if (is_a($arguments[1], 'SimpleXMLElement')) {
                     $post_body = $arguments[1]->asXML();
                 } elseif (is_array($arguments[1])) {
                     $post_body = ArrayToXml::toXML($arguments[1], $rootNodeName = $api_command['slug']);
                 }
-                $post_body = trim(substr($post_body, (stripos($post_body, ">") + 1)));
+            } elseif ((count($arguments) == 4)) {
+                $post_body = ArrayToXml::toXML($arguments[1], $arguments[3]);
+                $urlSuffix = '/' . $arguments[2] . '/' . $arguments[3];
             } else {
                 throw new UserException('Two parameters are required for method "' . $method . '", the method and the XML data');
             }
 
+            $post_body = trim(substr($post_body, (stripos($post_body, ">") + 1)));
         }
 
         $signatures = [
@@ -182,6 +185,10 @@ class XeroApi extends Component
                 $post_body = null;
             } else {
                 $filters = [];
+            }
+
+            if ($urlSuffix !== null) {
+                $url .= $urlSuffix;
             }
 
             ApiLimit::check();

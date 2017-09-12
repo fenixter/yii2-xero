@@ -317,7 +317,8 @@ class XeroOAuth {
 				break;
 			default :
 				curl_setopt ( $c, CURLOPT_CUSTOMREQUEST, $this->method );
-		}
+                $contentLength = 0;
+        }
 		
 		if (! empty ( $this->request_params )) {
 			// if not doing multipart we need to implode the parameters

@@ -109,7 +109,6 @@ class XeroApi extends Component
         $urlSuffix = null;
 
         if ($method == 'GET') {
-
             // Parameter 1 is for getting an object by ID
             $xero_id = (count($arguments) > 1) ? strip_tags(strval($arguments[1])) : false;
 
@@ -134,6 +133,15 @@ class XeroApi extends Component
             }
 
             $post_body = trim(substr($post_body, (stripos($post_body, ">") + 1)));
+        } elseif ($method == 'DELETE') {
+            $xero_id = (count($arguments) > 1) ? strip_tags(strval($arguments[1])) : false;
+            if (count($arguments) == 3) {
+                $urlSuffix = '/' . $arguments[2];
+            } elseif (count($arguments) == 4) {
+                $urlSuffix = '/' . $arguments[2] . '/' . $arguments[3];
+            } else {
+                throw new UserException('Xero id required for use this DELETE method');
+            }
         }
 
         $signatures = [
@@ -171,7 +179,7 @@ class XeroApi extends Component
             $url = $XeroOAuth->url($api_command['slug'], 'core');
             $data = null;
 
-            if ($method == 'GET') {
+            if ($method == 'GET' || $method == 'DELETE') {
                 if ($xero_id) {
                     $url = $XeroOAuth->url($api_command['slug'] . '/' . $xero_id, 'core');
                     $filters = [];
@@ -203,6 +211,8 @@ class XeroApi extends Component
 
             if ($XeroOAuth->response['code'] == 200) {
                 $data = $XeroOAuth->parseResponse($XeroOAuth->response['response'], $XeroOAuth->response['format']);
+            } elseif ($XeroOAuth->response['code'] == 204) {
+                $data = 'Successful deleted';
             } else {
                 throw new UserException('The Xero Api has returned the following error:{' . PHP_EOL . $XeroOAuth->response['response'] . '}');
             }
